@@ -92,7 +92,7 @@ const App = () => {
                           isActive
                             ? 'inline-block bg-blue-600 text-white py-2 px-1 w-full cursor-pointer rounded-md'
                             : isPending
-                              ? 'ease-in-out duration-200'
+                              ? 'ease-in-out duration-700 inline-block text-black py-2 px-1 w-full bg-indigo-300 rounded-md transition'
                               : 'inline-block bg-transparent text-black py-2 px-1 w-full cursor-pointer rounded-md hover:bg-neutral-300'
                         }
                         to={`contacts/${contact.id}`}
