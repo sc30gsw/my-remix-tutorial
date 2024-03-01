@@ -11,9 +11,11 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useNavigation,
 } from '@remix-run/react'
 import { CiSearch } from 'react-icons/ci'
 import { SiRemix } from 'react-icons/si'
+import { Spinner } from '~/components/Spinner'
 import { createEmptyContact, getContacts } from '~/data'
 
 export const links: LinksFunction = () => [
@@ -41,6 +43,7 @@ export const loader = async () => {
 
 const App = () => {
   const { contacts } = useLoaderData<typeof loader>()
+  const navigation = useNavigation()
 
   return (
     <html lang="ja">
@@ -119,9 +122,9 @@ const App = () => {
           </div>
           <div
             id="detail"
-            className=" pl-10 pt-10 w-full flex flex-col gap-5 z-10"
+            className="pl-10 pt-10 w-full flex flex-col gap-5 z-10"
           >
-            <Outlet />
+            {navigation.state === 'loading' ? <Spinner /> : <Outlet />}
           </div>
         </div>
 
