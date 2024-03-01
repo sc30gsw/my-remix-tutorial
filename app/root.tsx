@@ -55,6 +55,9 @@ const App = () => {
   const { contacts, q } = useLoaderData<typeof loader>()
   const navigation = useNavigation()
   const submit = useSubmit()
+  const searching =
+    navigation.location &&
+    new URLSearchParams(navigation.location.search).has('q')
 
   useEffect(() => {
     const searchField = document.getElementById('q')
@@ -84,7 +87,11 @@ const App = () => {
                   submit(event.currentTarget)
                 }}
               >
-                <CiSearch size={18} className="text-zinc-400" />
+                {searching ? (
+                  <Spinner size={5} color="border-neutral-400" />
+                ) : (
+                  <CiSearch size={18} className="text-zinc-400" />
+                )}
                 <input
                   id="q"
                   aria-label="Search contacts"
@@ -94,7 +101,6 @@ const App = () => {
                   name="q"
                   className="ml-2 outline-none"
                 />
-                <div id="search-spinner" aria-hidden={true} hidden={true} />
               </Form>
               <Form method="post">
                 <button
@@ -147,7 +153,11 @@ const App = () => {
             id="detail"
             className="pl-10 pt-10 w-full flex flex-col gap-5 z-10"
           >
-            {navigation.state === 'loading' ? <Spinner /> : <Outlet />}
+            {navigation.state === 'loading' && !searching ? (
+              <Spinner weight={4} my={16} />
+            ) : (
+              <Outlet />
+            )}
           </div>
         </div>
 
