@@ -1,3 +1,6 @@
+import { LinksFunction } from '@remix-run/node'
+import stylesheet from './app.css'
+
 import {
   Form,
   Links,
@@ -5,20 +8,24 @@ import {
   Meta,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
+} from '@remix-run/react'
 
-export default function App() {
+export const links: LinksFunction = () => [
+  { rel: 'stylesheet', href: stylesheet },
+]
+
+const App = () => {
   return (
-    <html lang="en">
+    <html lang="ja">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="font-serif">
         <div id="sidebar">
-          <h1>Remix Contacts</h1>
+          <h1 className="text-blue-500 text-3xl font-bold">Remix Contacts</h1>
           <div>
             <Form id="search-form" role="search">
               <input
@@ -28,7 +35,7 @@ export default function App() {
                 type="search"
                 name="q"
               />
-              <div id="search-spinner" aria-hidden hidden={true} />
+              <div id="search-spinner" aria-hidden={true} hidden={true} />
             </Form>
             <Form method="post">
               <button type="submit">New</button>
@@ -37,10 +44,10 @@ export default function App() {
           <nav>
             <ul>
               <li>
-                <a href={`/contacts/1`}>Your Name</a>
+                <a href="/contacts/1">Your Name</a>
               </li>
               <li>
-                <a href={`/contacts/2`}>Your Friend</a>
+                <a href="/contacts/2">Your Friend</a>
               </li>
             </ul>
           </nav>
@@ -51,5 +58,7 @@ export default function App() {
         <LiveReload />
       </body>
     </html>
-  );
+  )
 }
+
+export default App
