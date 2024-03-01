@@ -18,6 +18,7 @@ import {
   ScrollRestoration,
   useLoaderData,
   useNavigation,
+  useSubmit,
 } from '@remix-run/react'
 import { useEffect } from 'react'
 import { CiSearch } from 'react-icons/ci'
@@ -53,6 +54,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 const App = () => {
   const { contacts, q } = useLoaderData<typeof loader>()
   const navigation = useNavigation()
+  const submit = useSubmit()
 
   useEffect(() => {
     const searchField = document.getElementById('q')
@@ -78,6 +80,9 @@ const App = () => {
                 id="search-form"
                 role="search"
                 className="mr-2 bg-white flex items-center justify-around rounded-md p-2 shadow-xl"
+                onChange={(event) => {
+                  submit(event.currentTarget)
+                }}
               >
                 <CiSearch size={18} className="text-zinc-400" />
                 <input
