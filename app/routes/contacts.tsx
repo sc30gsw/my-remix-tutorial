@@ -1,16 +1,18 @@
-import { LoaderFunctionArgs, json, redirect } from '@remix-run/node'
+import { LoaderFunctionArgs, defer, json, redirect } from '@remix-run/node'
 
 import {
+  Await,
   Form,
-  NavLink,
   Outlet,
   useLoaderData,
   useNavigation,
   useSubmit,
 } from '@remix-run/react'
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { CiSearch } from 'react-icons/ci'
+import { LuLoader2 } from 'react-icons/lu'
 import { SiRemix } from 'react-icons/si'
+import { Navbar } from '~/components/Navbar'
 import { Spinner } from '~/components/Spinner'
 import { createEmptyContact, getContacts } from '~/data'
 
@@ -22,8 +24,8 @@ export const action = async () => {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url)
   const q = url.searchParams.get('q')
-  const contacts = await getContacts(q)
-  return json({ contacts, q })
+  const contacts = getContacts(q)
+  return defer({ contacts, q })
 }
 
 const ContactsPage = () => {
@@ -41,6 +43,7 @@ const ContactsPage = () => {
       searchField.value = q || ''
     }
   }, [q])
+
   return (
     <div className="min-h-dvh flex">
       <div id="sidebar" className="bg-zinc-200 w-96 h-dvh relative">
@@ -79,37 +82,18 @@ const ContactsPage = () => {
           </Form>
         </div>
         <nav className="px-6 pt-6 h-[calc(100vh-48px-96px)] overflow-scroll hidden-scrollbar">
-          {contacts.length ? (
-            <ul className="flex flex-col gap-4">
-              {contacts.map((contact) => (
-                <li key={contact.id}>
-                  <NavLink
-                    className={({ isActive, isPending }) =>
-                      isActive
-                        ? 'inline-block bg-blue-600 text-white py-2 px-1 w-full cursor-pointer rounded-md'
-                        : isPending
-                          ? 'ease-in-out duration-700 inline-block text-black py-2 px-1 w-full bg-indigo-300 rounded-md transition'
-                          : 'inline-block bg-transparent text-black py-2 px-1 w-full cursor-pointer rounded-md hover:bg-neutral-300'
-                    }
-                    to={`${contact.id}`}
-                  >
-                    {contact.first || contact.last ? (
-                      <span>
-                        {contact.first} {contact.last}
-                      </span>
-                    ) : (
-                      <i className="text-gray-400">No Name</i>
-                    )}
-                    {contact.favorite ? <span>★</span> : null}
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>
-              <i>No contacts</i>
-            </p>
-          )}
+          <Suspense
+            fallback={
+              <LuLoader2
+                size={32}
+                className="animate-spin flex justify-center w-full text-blue-500"
+              />
+            }
+          >
+            <Await resolve={contacts}>
+              {(contacts) => <Navbar contacts={contacts} />}
+            </Await>
+          </Suspense>
         </nav>
         <h1 className="border-t border-zinc-400 flex h-12 items-center pl-12 w-full">
           <SiRemix size={26} className="mr-2 shadow-xl" />
