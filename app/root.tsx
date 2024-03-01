@@ -19,6 +19,7 @@ import {
   useLoaderData,
   useNavigation,
 } from '@remix-run/react'
+import { useEffect } from 'react'
 import { CiSearch } from 'react-icons/ci'
 import { SiRemix } from 'react-icons/si'
 import { Spinner } from '~/components/Spinner'
@@ -52,6 +53,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 const App = () => {
   const { contacts, q } = useLoaderData<typeof loader>()
   const navigation = useNavigation()
+
+  useEffect(() => {
+    const searchField = document.getElementById('q')
+
+    if (searchField instanceof HTMLInputElement) {
+      searchField.value = q || ''
+    }
+  }, [q])
 
   return (
     <html lang="ja">
