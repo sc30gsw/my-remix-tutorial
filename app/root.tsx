@@ -1,12 +1,12 @@
-import { LinksFunction, MetaFunction, json } from '@remix-run/node'
+import { LinksFunction, MetaFunction, json, redirect } from '@remix-run/node'
 import stylesheet from './app.css'
 
 import {
   Form,
-  Link,
   Links,
   LiveReload,
   Meta,
+  NavLink,
   Outlet,
   Scripts,
   ScrollRestoration,
@@ -31,7 +31,7 @@ export const meta: MetaFunction = () => {
 
 export const action = async () => {
   const contact = await createEmptyContact()
-  return json({ contact })
+  return redirect(`/contacts/${contact.id}/edit`)
 }
 
 export const loader = async () => {
@@ -83,11 +83,17 @@ const App = () => {
               {contacts.length ? (
                 <ul className="flex flex-col gap-4">
                   {contacts.map((contact) => (
-                    <li
-                      key={contact.id}
-                      className="hover:bg-neutral-300 rounded py-1 pl-1 cursor-pointer"
-                    >
-                      <Link to={`contacts/${contact.id}`}>
+                    <li key={contact.id}>
+                      <NavLink
+                        className={({ isActive, isPending }) =>
+                          isActive
+                            ? 'inline-block bg-blue-600 text-white py-2 px-1 w-full cursor-pointer rounded-md'
+                            : isPending
+                              ? 'ease-in-out duration-200'
+                              : 'inline-block bg-transparent text-black py-2 px-1 w-full cursor-pointer rounded-md hover:bg-neutral-300'
+                        }
+                        to={`contacts/${contact.id}`}
+                      >
                         {contact.first || contact.last ? (
                           <span>
                             {contact.first} {contact.last}
@@ -96,7 +102,7 @@ const App = () => {
                           <i className="text-gray-400">No Name</i>
                         )}
                         {contact.favorite ? <span>★</span> : null}
-                      </Link>
+                      </NavLink>
                     </li>
                   ))}
                 </ul>
