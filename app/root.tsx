@@ -1,20 +1,42 @@
-import { LinksFunction } from '@remix-run/node'
+import { LinksFunction, MetaFunction, json } from '@remix-run/node'
 import stylesheet from './app.css'
 
 import {
   Form,
+  Link,
   Links,
   LiveReload,
   Meta,
+  Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from '@remix-run/react'
+import { CiSearch } from 'react-icons/ci'
+import { SiRemix } from 'react-icons/si'
+import { getContacts } from '~/data'
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: stylesheet },
 ]
 
+export const meta: MetaFunction = () => {
+  return [
+    {
+      title: 'Remix Tutorial',
+      description: 'A tutorial for Remix',
+    },
+  ]
+}
+
+export const loader = async () => {
+  const contacts = await getContacts()
+  return json({ contacts })
+}
+
 const App = () => {
+  const { contacts } = useLoaderData<typeof loader>()
+
   return (
     <html lang="ja">
       <head>
@@ -23,34 +45,73 @@ const App = () => {
         <Meta />
         <Links />
       </head>
-      <body className="font-serif">
-        <div id="sidebar">
-          <h1 className="text-blue-500 text-3xl font-bold">Remix Contacts</h1>
-          <div>
-            <Form id="search-form" role="search">
-              <input
-                id="q"
-                aria-label="Search contacts"
-                placeholder="Search"
-                type="search"
-                name="q"
-              />
-              <div id="search-spinner" aria-hidden={true} hidden={true} />
-            </Form>
-            <Form method="post">
-              <button type="submit">New</button>
-            </Form>
+      <body className="font-sans">
+        <div className="min-h-dvh flex">
+          <div id="sidebar" className="bg-zinc-300 w-96 h-dvh relative">
+            <div className="flex p-4 items-center justify-center border-b border-b-zinc-400 h-24">
+              <Form
+                id="search-form"
+                role="search"
+                className="mr-2 bg-white flex items-center justify-around rounded-md p-2 shadow-xl"
+              >
+                <CiSearch size={18} className="text-zinc-400" />
+                <input
+                  id="q"
+                  aria-label="Search contacts"
+                  placeholder="Search"
+                  type="search"
+                  name="q"
+                  className="ml-2 outline-none"
+                />
+                <div id="search-spinner" aria-hidden={true} hidden={true} />
+              </Form>
+              <Form method="post">
+                <button
+                  type="submit"
+                  className="bg-white text-blue-400 shadow-xl py-2 px-3 rounded-md"
+                >
+                  New
+                </button>
+              </Form>
+            </div>
+            <nav className="px-6 pt-6 h-[calc(100vh-48px-96px)] overflow-scroll hidden-scrollbar">
+              {contacts.length ? (
+                <ul className="flex flex-col gap-4">
+                  {contacts.map((contact) => (
+                    <li
+                      key={contact.id}
+                      className="hover:bg-zinc-400 rounded py-1 pl-1 cursor-pointer"
+                    >
+                      <Link to={`contacts/${contact.id}`}>
+                        {contact.first || contact.last ? (
+                          <span>
+                            {contact.first} {contact.last}
+                          </span>
+                        ) : (
+                          <i>No Name</i>
+                        )}
+                        {contact.favorite ? <span>★</span> : null}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>
+                  <i>No contacts</i>
+                </p>
+              )}
+            </nav>
+            <h1 className="border-t border-zinc-400 flex h-12 items-center pl-12 w-full">
+              <SiRemix size={26} className="mr-2 shadow-xl" />
+              Remix Contacts
+            </h1>
           </div>
-          <nav>
-            <ul>
-              <li>
-                <a href="/contacts/1">Your Name</a>
-              </li>
-              <li>
-                <a href="/contacts/2">Your Friend</a>
-              </li>
-            </ul>
-          </nav>
+          <div
+            id="detail"
+            className=" pl-10 pt-10 w-full flex flex-col gap-5 z-10"
+          >
+            <Outlet />
+          </div>
         </div>
 
         <ScrollRestoration />
