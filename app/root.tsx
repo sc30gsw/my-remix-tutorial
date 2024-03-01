@@ -84,7 +84,8 @@ const App = () => {
                 role="search"
                 className="mr-2 bg-white flex items-center justify-around rounded-md p-2 shadow-xl"
                 onChange={(event) => {
-                  submit(event.currentTarget)
+                  const isFirstSearch = q === null
+                  submit(event.currentTarget, { replace: !isFirstSearch })
                 }}
               >
                 {searching ? (
