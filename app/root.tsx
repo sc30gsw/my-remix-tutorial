@@ -1,4 +1,10 @@
-import { LinksFunction, MetaFunction, json, redirect } from '@remix-run/node'
+import {
+  LinksFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+  json,
+  redirect,
+} from '@remix-run/node'
 import stylesheet from './app.css'
 
 import {
@@ -36,13 +42,15 @@ export const action = async () => {
   return redirect(`/contacts/${contact.id}/edit`)
 }
 
-export const loader = async () => {
-  const contacts = await getContacts()
-  return json({ contacts })
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const url = new URL(request.url)
+  const q = url.searchParams.get('q')
+  const contacts = await getContacts(q)
+  return json({ contacts, q })
 }
 
 const App = () => {
-  const { contacts } = useLoaderData<typeof loader>()
+  const { contacts, q } = useLoaderData<typeof loader>()
   const navigation = useNavigation()
 
   return (
@@ -66,6 +74,7 @@ const App = () => {
                 <input
                   id="q"
                   aria-label="Search contacts"
+                  defaultValue={q || ''}
                   placeholder="Search"
                   type="search"
                   name="q"
