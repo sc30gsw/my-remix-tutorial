@@ -26,7 +26,12 @@
   },
   "overrides": [
     {
-      "include": ["remix.config.js", "tailwind.config.ts", "root.tsx"],
+      "include": [
+        "remix.config.js",
+        "tailwind.config.ts",
+        "root.tsx",
+        "./app/routes/*.tsx"
+      ],
       "linter": {
         "rules": {
           "style": {
