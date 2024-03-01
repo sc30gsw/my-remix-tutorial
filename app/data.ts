@@ -94,7 +94,6 @@ export async function updateContact(id: string, updates: ContactMutation) {
 export async function deleteContact(id: string) {
   fakeContacts.destroy(id)
 }
-
 ;[
   {
     avatar:
