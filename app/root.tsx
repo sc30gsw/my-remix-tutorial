@@ -14,7 +14,7 @@ import {
 } from '@remix-run/react'
 import { CiSearch } from 'react-icons/ci'
 import { SiRemix } from 'react-icons/si'
-import { getContacts } from '~/data'
+import { createEmptyContact, getContacts } from '~/data'
 
 export const links: LinksFunction = () => [
   { rel: 'stylesheet', href: stylesheet },
@@ -27,6 +27,11 @@ export const meta: MetaFunction = () => {
       description: 'A tutorial for Remix',
     },
   ]
+}
+
+export const action = async () => {
+  const contact = await createEmptyContact()
+  return json({ contact })
 }
 
 export const loader = async () => {
@@ -47,7 +52,7 @@ const App = () => {
       </head>
       <body className="font-sans">
         <div className="min-h-dvh flex">
-          <div id="sidebar" className="bg-zinc-300 w-96 h-dvh relative">
+          <div id="sidebar" className="bg-zinc-200 w-96 h-dvh relative">
             <div className="flex p-4 items-center justify-center border-b border-b-zinc-400 h-24">
               <Form
                 id="search-form"
@@ -80,7 +85,7 @@ const App = () => {
                   {contacts.map((contact) => (
                     <li
                       key={contact.id}
-                      className="hover:bg-zinc-400 rounded py-1 pl-1 cursor-pointer"
+                      className="hover:bg-neutral-300 rounded py-1 pl-1 cursor-pointer"
                     >
                       <Link to={`contacts/${contact.id}`}>
                         {contact.first || contact.last ? (
@@ -88,7 +93,7 @@ const App = () => {
                             {contact.first} {contact.last}
                           </span>
                         ) : (
-                          <i>No Name</i>
+                          <i className="text-gray-400">No Name</i>
                         )}
                         {contact.favorite ? <span>★</span> : null}
                       </Link>
